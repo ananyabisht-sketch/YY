@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ananya Bisht — Tarot Reader</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=DM+Mono:wght@300;400&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--ink:#f0ece4;--muted:#8a8275;--faint:#4a4640;--border:#2a2720;--surface:#161410;--bg:#0e0c0a;--card:#131109;--gold:#c9a84c;--gold-faint:rgba(201,168,76,0.12)}
+html{scroll-behavior:smooth}
+body{font-family:'DM Mono',monospace;font-weight:300;color:var(--ink);background:var(--bg);line-height:1.6}
+a{text-decoration:none;color:inherit}
+.wrap{max-width:860px;margin:0 auto;padding:0 2rem}
+nav{position:sticky;top:0;z-index:100;background:rgba(14,12,10,0.92);backdrop-filter:blur(12px);border-bottom:0.5px solid var(--border);padding:1.2rem 0}
+.nav-inner{display:flex;justify-content:space-between;align-items:center;max-width:860px;margin:0 auto;padding:0 2rem}
+.logo{font-family:'Cormorant Garamond',serif;font-size:19px;font-weight:300;letter-spacing:.05em}
+.logo span{font-style:italic;color:var(--gold)}
+.nav-links{display:flex;gap:2.5rem;list-style:none}
+.nav-links a{font-size:10px;letter-spacing:.15em;text-transform:uppercase;color:var(--muted);transition:color .2s}
+.nav-links a:hover{color:var(--gold)}
+.hero{display:grid;grid-template-columns:1fr 1fr;min-height:92vh;border-bottom:0.5px solid var(--border);align-items:center}
+.hero-left{padding:5rem 3rem 5rem 2rem;display:flex;flex-direction:column;justify-content:center}
+.hero-eyebrow{font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--faint);margin-bottom:2rem}
+.hero-left h1{font-family:'Cormorant Garamond',serif;font-size:62px;font-weight:300;line-height:1.05;letter-spacing:-.01em;margin-bottom:1.5rem}
+.hero-left h1 em{font-style:italic;color:var(--gold)}
+.hero-tagline{font-size:11px;letter-spacing:.05em;color:var(--muted);line-height:2.1;margin-bottom:3rem;max-width:300px}
+.btn-row{display:flex;flex-direction:column;gap:10px;max-width:240px}
+.btn{display:inline-flex;align-items:center;gap:10px;font-family:'DM Mono',monospace;font-size:10px;letter-spacing:.14em;text-transform:uppercase;padding:14px 20px;border:0.5px solid var(--gold);color:var(--gold);background:transparent;cursor:pointer;transition:all .2s;width:100%;justify-content:center}
+.btn:hover{background:var(--gold);color:var(--bg)}
+.btn.ghost{border-color:var(--border);color:var(--muted)}
+.btn.ghost:hover{border-color:var(--muted);color:var(--ink);background:transparent}
+.btn svg{width:13px;height:13px;flex-shrink:0}
+.hero-right{display:flex;align-items:center;justify-content:center;padding:3rem 2rem}
+.tarot-card{position:relative;width:260px;flex-shrink:0}
+.tarot-outer{border:1px solid var(--gold);padding:14px;position:relative;background:var(--card)}
+.tarot-corner{position:absolute;width:22px;height:22px;border-color:var(--gold);border-style:solid;opacity:0.6}
+.tarot-corner.tl{top:-1px;left:-1px;border-width:2px 0 0 2px}
+.tarot-corner.tr{top:-1px;right:-1px;border-width:2px 2px 0 0}
+.tarot-corner.bl{bottom:-1px;left:-1px;border-width:0 0 2px 2px}
+.tarot-corner.br{bottom:-1px;right:-1px;border-width:0 2px 2px 0}
+.tarot-inner{border:0.5px solid rgba(201,168,76,0.3);overflow:hidden;position:relative}
+.tarot-photo{width:100%;height:320px;object-fit:cover;object-position:center 10%;display:block;filter:sepia(20%) contrast(1.1) brightness(0.88)}
+.tarot-vignette{position:absolute;inset:0;background:linear-gradient(to bottom,rgba(0,0,0,0.2) 0%,transparent 30%,transparent 60%,rgba(0,0,0,0.55) 100%);pointer-events:none}
+.tarot-top{position:absolute;top:10px;left:0;right:0;text-align:center;font-family:'Cormorant Garamond',serif;font-size:9px;letter-spacing:.3em;text-transform:uppercase;color:rgba(201,168,76,0.7)}
+.tarot-bottom{position:absolute;bottom:10px;left:0;right:0;text-align:center;font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:rgba(240,236,228,0.85)}
+.tarot-number{text-align:center;font-family:'Cormorant Garamond',serif;font-size:12px;letter-spacing:.25em;color:var(--gold);padding:10px 0 4px;opacity:0.7}
+.tarot-label{text-align:center;font-family:'Cormorant Garamond',serif;font-size:15px;letter-spacing:.18em;text-transform:uppercase;color:var(--ink);padding:0 0 10px}
+.tarot-stars{display:flex;justify-content:center;gap:6px;padding-bottom:12px}
+.tarot-stars span{color:var(--gold);font-size:9px;opacity:0.5}
+.ticker{border-bottom:0.5px solid var(--border);border-top:0.5px solid var(--border);padding:.8rem 0;overflow:hidden;white-space:nowrap;background:var(--surface)}
+.ticker-inner{display:inline-flex;gap:2.5rem;animation:ticker 22s linear infinite}
+.ticker-inner span{font-size:10px;letter-spacing:.15em;text-transform:uppercase;color:var(--faint)}
+.ticker-inner span.dot{color:var(--gold);opacity:0.4}
+@keyframes ticker{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+.section{padding:5rem 0;border-bottom:0.5px solid var(--border)}
+.section-label{font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--faint);margin-bottom:3rem;display:flex;align-items:center;gap:1rem}
+.section-label::after{content:'';flex:1;height:0.5px;background:var(--border)}
+.about-grid{display:grid;grid-template-columns:3fr 2fr;gap:5rem;align-items:start}
+.about-bio{font-family:'Cormorant Garamond',serif;font-size:24px;font-weight:300;line-height:1.65;margin-bottom:1.5rem;color:var(--ink)}
+.about-sub{font-size:11px;letter-spacing:.04em;color:var(--muted);line-height:2.1}
+.hobbies-title{font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--faint);margin-bottom:1.2rem}
+.hobbies-list{list-style:none}
+.hobbies-list li{display:flex;align-items:center;gap:12px;padding:11px 0;border-bottom:0.5px solid var(--border);font-size:11px;letter-spacing:.05em;color:var(--muted)}
+.hobbies-list li:first-child{border-top:0.5px solid var(--border)}
+.li-num{font-size:10px;color:var(--faint);min-width:16px}
+.sessions-intro{font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:300;font-style:italic;color:var(--muted);line-height:1.7;max-width:500px;margin-bottom:3rem}
+.sessions-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--border)}
+.session-card{background:var(--surface);padding:2rem 1.5rem;transition:background .2s}
+.session-card:hover{background:var(--card)}
+.s-num{font-size:10px;letter-spacing:.15em;color:var(--faint);margin-bottom:1.5rem}
+.s-name{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:300;color:var(--ink);margin-bottom:.5rem}
+.s-duration{font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--faint);margin-bottom:1rem}
+.s-desc{font-size:11px;color:var(--muted);line-height:1.8;margin-bottom:1.5rem}
+.s-price{font-size:24px;letter-spacing:.02em;color:var(--gold);margin-bottom:1.5rem;font-family:'Cormorant Garamond',serif}
+.s-book{background:none;border:none;font-family:'DM Mono',monospace;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--faint);cursor:pointer;padding:0;display:flex;align-items:center;gap:6px;transition:color .2s}
+.s-book:hover{color:var(--gold)}
+.faq-list{list-style:none}
+.faq-item{border-bottom:0.5px solid var(--border);cursor:pointer}
+.faq-item:first-child{border-top:0.5px solid var(--border)}
+.faq-q{display:flex;justify-content:space-between;align-items:center;padding:1.5rem 0;font-family:'Cormorant Garamond',serif;font-size:21px;font-weight:300;color:var(--ink)}
+.faq-icon{font-size:20px;color:var(--muted);transition:transform .25s;line-height:1}
+.faq-item.open .faq-icon{transform:rotate(45deg);color:var(--gold)}
+.faq-a{font-size:11px;letter-spacing:.03em;color:var(--muted);line-height:2;max-height:0;overflow:hidden;transition:max-height .3s ease,padding .3s}
+.faq-item.open .faq-a{max-height:200px;padding-bottom:1.5rem}
+.book-grid{display:grid;grid-template-columns:1fr 1fr;gap:5rem;align-items:start}
+.book-h2{font-family:'Cormorant Garamond',serif;font-size:42px;font-weight:300;line-height:1.15;margin-bottom:1rem;color:var(--ink)}
+.book-sub{font-size:11px;letter-spacing:.04em;color:var(--muted);line-height:2;margin-bottom:2rem}
+.contact-list{list-style:none;margin-bottom:2rem}
+.contact-list li{display:flex;align-items:center;gap:14px;padding:12px 0;border-bottom:0.5px solid var(--border);font-size:11px;letter-spacing:.04em;color:var(--muted)}
+.contact-list li:first-child{border-top:0.5px solid var(--border)}
+.c-label{font-size:10px;letter-spacing:.15em;text-transform:uppercase;color:var(--faint);min-width:72px}
+.c-val{cursor:pointer;transition:color .2s}.c-val:hover{color:var(--gold)}
+.timing-box{border:0.5px solid var(--border);padding:2rem;background:var(--surface)}
+.timing-title{font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--faint);margin-bottom:1.5rem}
+.timing-row{display:flex;justify-content:space-between;font-size:11px;letter-spacing:.04em;padding:10px 0;border-bottom:0.5px solid var(--border);color:var(--muted)}
+.timing-row:last-child{border-bottom:none}
+.timing-day{color:var(--ink)}
+.book-form{margin-top:1.5rem;padding:1.5rem;background:var(--surface);border:0.5px solid var(--border)}
+.form-label{font-size:10px;letter-spacing:.15em;text-transform:uppercase;color:var(--faint);margin-bottom:.8rem;display:block}
+select{width:100%;font-family:'DM Mono',monospace;font-size:11px;padding:11px 12px;border:0.5px solid var(--border);background:var(--bg);color:var(--ink);appearance:none;cursor:pointer;margin-bottom:1rem;letter-spacing:.04em}
+.wa-btn{width:100%;display:flex;align-items:center;justify-content:center;gap:10px;font-family:'DM Mono',monospace;font-size:10px;letter-spacing:.15em;text-transform:uppercase;padding:14px;border:0.5px solid var(--gold);color:var(--gold);background:transparent;cursor:pointer;transition:all .2s}
+.wa-btn:hover{background:var(--gold);color:var(--bg)}
+.wa-btn svg{width:14px;height:14px}
+footer{padding:2rem 0;display:flex;justify-content:space-between;align-items:center;font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--faint)}
+.footer-social{display:flex;gap:1.5rem}
+.footer-social a{color:var(--faint);cursor:pointer;transition:color .2s}.footer-social a:hover{color:var(--gold)}
+.quotes-track-wrap{position:relative;overflow:hidden}
+.quotes-track{display:flex;transition:transform .5s cubic-bezier(.4,0,.2,1)}
+.quote-slide{min-width:100%;padding:1rem 0 3rem}
+.quote-mark{font-family:'Cormorant Garamond',serif;font-size:80px;line-height:.6;color:var(--gold);opacity:0.25;margin-bottom:1.5rem}
+.quote-text{font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:300;font-style:italic;line-height:1.6;color:var(--ink);max-width:620px;margin-bottom:2rem}
+.quote-author{font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--gold);opacity:0.7}
+.quotes-nav{display:flex;align-items:center;gap:1.5rem}
+.q-btn{background:none;border:0.5px solid var(--border);color:var(--muted);font-size:16px;width:38px;height:38px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s;font-family:'DM Mono',monospace}
+.q-btn:hover{border-color:var(--gold);color:var(--gold)}
+.q-dots{display:flex;gap:8px}
+.q-dot{width:4px;height:4px;background:var(--faint);cursor:pointer;transition:all .2s}
+.q-dot.active{background:var(--gold);width:20px}
+@media(max-width:680px){
+  .hero{grid-template-columns:1fr;min-height:auto}
+  .hero-left{padding:3rem 1.5rem 2rem}
+  .hero-left h1{font-size:44px}
+  .hero-right{padding:1rem 2rem 3rem}
+  .tarot-card{width:200px}
+  .tarot-photo{height:250px}
+  .about-grid,.book-grid{grid-template-columns:1fr;gap:2.5rem}
+  .sessions-grid{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-inner">
+    <div class="logo">Ananya <span>Bisht</span></div>
+    <ul class="nav-links">
+      <li><a href="#about">About</a></li>
+      <li><a href="#sessions">Sessions</a></li>
+      <li><a href="#why">Why Tarot</a></li>
+      <li><a href="#book">Book</a></li>
+    </ul>
+  </div>
+</nav>
+
+<section class="hero">
+  <div class="hero-left">
+    <div class="hero-eyebrow">Tarot readings &mdash; Delhi, India</div>
+    <h1>Read the<br><em>cards,</em><br>not the<br>noise.</h1>
+    <p class="hero-tagline">A first-year student who builds, creates and explores. Tarot on the side.</p>
+    <div class="btn-row">
+      <button class="btn" id="hero-wa-btn">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.127.558 4.126 1.533 5.862L.054 23.486a.5.5 0 0 0 .602.602l5.624-1.479A11.945 11.945 0 0 0 12 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 22a9.938 9.938 0 0 1-5.088-1.396l-.364-.215-3.777.993.993-3.777-.215-.364A9.938 9.938 0 0 1 2 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10z"/></svg>
+        Book via WhatsApp
+      </button>
+      <a class="btn ghost" href="https://www.instagram.com/mysticananyaa" target="_blank">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg>
+        Instagram DM
+      </a>
+    </div>
+  </div>
+  <div class="hero-right">
+    <div class="tarot-card">
+      <div class="tarot-outer">
+        <span class="tarot-corner tl"></span>
+        <span class="tarot-corner tr"></span>
+        <span class="tarot-corner bl"></span>
+        <span class="tarot-corner br"></span>
+        <div class="tarot-inner">
+          <img class="tarot-photo" src="{{ url_for('static', filename='ananya.jpeg') }}" alt="Ananya Bisht">
+          <div class="tarot-vignette"></div>
+          <div class="tarot-top">The Seer</div>
+          <div class="tarot-bottom">Ananya</div>
+        </div>
+        <div class="tarot-number">XVIII</div>
+        <div class="tarot-label">The Reader</div>
+        <div class="tarot-stars">
+          <span>&#10022;</span><span>&#10022;</span><span>&#10022;</span><span>&#10022;</span><span>&#10022;</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="ticker">
+  <div class="ticker-inner">
+    <span>Tarot Readings</span><span class="dot">&diams;</span>
+    <span>Delhi, India</span><span class="dot">&diams;</span>
+    <span>General &bull; Love &bull; Career</span><span class="dot">&diams;</span>
+    <span>Online &amp; In-Person</span><span class="dot">&diams;</span>
+    <span>Book via WhatsApp</span><span class="dot">&diams;</span>
+    <span>@mysticananyaa</span><span class="dot">&diams;</span>
+    <span>Tarot Readings</span><span class="dot">&diams;</span>
+    <span>Delhi, India</span><span class="dot">&diams;</span>
+    <span>General &bull; Love &bull; Career</span><span class="dot">&diams;</span>
+    <span>Online &amp; In-Person</span><span class="dot">&diams;</span>
+    <span>Book via WhatsApp</span><span class="dot">&diams;</span>
+    <span>@mysticananyaa</span><span class="dot">&diams;</span>
+  </div>
+</div>
+
+<section class="section" id="about">
+  <div class="wrap">
+    <div class="section-label">01 &mdash; About me</div>
+    <div class="about-grid">
+      <div>
+        <p class="about-bio">Hi, I'm Ananya, a first-year college student who likes to build stuff, create things, and explore wherever curiosity takes me. Tarot found me a few years ago and never really left.</p>
+        <p class="about-sub">I don't read cards to tell you what's going to happen. I read them to help you figure out what you already know but haven't said out loud yet. Less mysticism, more mirror.</p>
+      </div>
+      <div>
+        <div class="hobbies-title">Things I'm into</div>
+        <ul class="hobbies-list">
+          <li><span class="li-num">01</span> Building and coding</li>
+          <li><span class="li-num">02</span> Creating and exploring</li>
+          <li><span class="li-num">03</span> Tarot and symbolism</li>
+          <li><span class="li-num">04</span> Finding patterns in chaos</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="sessions">
+  <div class="wrap">
+    <div class="section-label">02 &mdash; Sessions</div>
+    <p class="sessions-intro">"Each reading is tailored to where you are right now, not where you think you should be."</p>
+    <div class="sessions-grid">
+      {% for session in sessions %}
+      <div class="session-card">
+        <div class="s-num">0{{ loop.index }}</div>
+        <div class="s-name">{{ session.name }}</div>
+        <div class="s-duration">{{ session.duration }}</div>
+        <div class="s-desc">{{ session.desc }}</div>
+        <div class="s-price">{{ session.price }}</div>
+        <button class="s-book" onclick="bookWA('{{ session.name }} ({{ session.duration }})')">Book this &rarr;</button>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<section class="section" id="quotes">
+  <div class="wrap">
+    <div class="section-label">03 &mdash; Words to sit with</div>
+    <div class="quotes-track-wrap">
+      <div class="quotes-track" id="quotesTrack">
+        {% for q in quotes %}
+        <div class="quote-slide">
+          <div class="quote-mark">&ldquo;</div>
+          <p class="quote-text">{{ q.text }}</p>
+          <div class="quote-author">{{ q.author }}</div>
+        </div>
+        {% endfor %}
+      </div>
+      <div class="quotes-nav">
+        <button class="q-btn" id="qPrev">&#8592;</button>
+        <div class="q-dots" id="qDots"></div>
+        <button class="q-btn" id="qNext">&#8594;</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="why">
+  <div class="wrap">
+    <div class="section-label">04 &mdash; Why tarot</div>
+    <ul class="faq-list">
+      <li class="faq-item" onclick="toggle(this)">
+        <div class="faq-q">Is tarot fortune-telling? <span class="faq-icon">+</span></div>
+        <div class="faq-a">Not really. Tarot is a tool for reflection. It surfaces patterns, asks difficult questions, and helps you think through decisions. It doesn't predict your future; it helps you understand your present.</div>
+      </li>
+      <li class="faq-item" onclick="toggle(this)">
+        <div class="faq-q">Do I need to believe in it? <span class="faq-icon">+</span></div>
+        <div class="faq-a">No. Sceptics often find it more useful because they engage with the prompts critically. The cards are a mirror, not a mandate.</div>
+      </li>
+      <li class="faq-item" onclick="toggle(this)">
+        <div class="faq-q">What should I come prepared with? <span class="faq-icon">+</span></div>
+        <div class="faq-a">A question, or even just a feeling. You don't need to have it figured out. That's what the session is for.</div>
+      </li>
+      <li class="faq-item" onclick="toggle(this)">
+        <div class="faq-q">Are sessions confidential? <span class="faq-icon">+</span></div>
+        <div class="faq-a">Completely. What you share in a session stays there. Nothing is recorded, shared, or referenced after we're done.</div>
+      </li>
+      <li class="faq-item" onclick="toggle(this)">
+        <div class="faq-q">Online or in-person? <span class="faq-icon">+</span></div>
+        <div class="faq-a">Both. Online sessions happen over Google Meet. In-person is available in Delhi. Just mention your preference when you book.</div>
+      </li>
+    </ul>
+  </div>
+</section>
+
+<section class="section" id="book">
+  <div class="wrap">
+    <div class="section-label">05 &mdash; Book a session</div>
+    <div class="book-grid">
+      <div>
+        <h2 class="book-h2">Let's sit<br>with the<br>cards.</h2>
+        <p class="book-sub">Slots are limited. Reach out early and we'll find a time that works. Sessions online via Google Meet or in person in Delhi.</p>
+        <ul class="contact-list">
+          <li><span class="c-label">WhatsApp</span><span class="c-val" onclick="bookWA('General Reading')">+91 82879 46354</span></li>
+          <li><span class="c-label">Instagram</span><a class="c-val" href="https://www.instagram.com/mysticananyaa" target="_blank">@mysticananyaa</a></li>
+        </ul>
+      </div>
+      <div>
+        <div class="timing-box">
+          <div class="timing-title">Available times (IST)</div>
+          <div class="timing-row"><span class="timing-day">Mon to Fri</span><span>6pm to 9pm</span></div>
+          <div class="timing-row"><span class="timing-day">Saturday</span><span>11am to 6pm</span></div>
+          <div class="timing-row"><span class="timing-day">Sunday</span><span>By request</span></div>
+        </div>
+        <div class="book-form">
+          <label class="form-label" for="sess-select">Select session</label>
+          <select id="sess-select">
+            {% for session in sessions %}
+            <option value="{{ session.name }} ({{ session.duration }})">{{ session.name }} &mdash; {{ session.duration }} &mdash; {{ session.price }}</option>
+            {% endfor %}
+          </select>
+          <button class="wa-btn" onclick="bookFromSelect()">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.127.558 4.126 1.533 5.862L.054 23.486a.5.5 0 0 0 .602.602l5.624-1.479A11.945 11.945 0 0 0 12 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 22a9.938 9.938 0 0 1-5.088-1.396l-.364-.215-3.777.993.993-3.777-.215-.364A9.938 9.938 0 0 1 2 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10z"/></svg>
+            Send booking request
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap" style="width:100%;display:flex;justify-content:space-between;align-items:center">
+    <span>Ananya Bisht &mdash; 2026</span>
+    <div class="footer-social">
+      <a onclick="bookWA('General Reading')">WhatsApp</a>
+      <a href="https://www.instagram.com/mysticananyaa" target="_blank">Instagram</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+const WA='918287946354';
+function buildWA(s){return'https://wa.me/'+WA+'?text='+encodeURIComponent('Hi! I found you on your website and want to book a reading.\n\nSession: '+s)}
+function bookWA(s){window.open(buildWA(s),'_blank')}
+function bookFromSelect(){bookWA(document.getElementById('sess-select').value)}
+document.getElementById('hero-wa-btn').onclick=function(){bookWA('General Reading')}
+function toggle(el){el.classList.toggle('open')}
+// Quotes carousel
+(function(){
+  const track = document.getElementById('quotesTrack');
+  const slides = track ? track.children : [];
+  const total = slides.length;
+  let cur = 0;
+  const dotsEl = document.getElementById('qDots');
+  const dots = [];
+  for(let i=0;i<total;i++){
+    const d = document.createElement('div');
+    d.className = 'q-dot' + (i===0?' active':'');
+    d.onclick = ()=>go(i);
+    dotsEl.appendChild(d);
+    dots.push(d);
+  }
+  function go(n){
+    cur = (n+total)%total;
+    track.style.transform = 'translateX(-'+cur+'00%)';
+    dots.forEach((d,i)=>d.classList.toggle('active',i===cur));
+  }
+  document.getElementById('qPrev').onclick = ()=>go(cur-1);
+  document.getElementById('qNext').onclick = ()=>go(cur+1);
+  setInterval(()=>go(cur+1), 5000);
+})();
+
+</script>
+</body>
+</html>
